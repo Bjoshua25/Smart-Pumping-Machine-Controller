@@ -1,30 +1,16 @@
-// Set hardwareSerial1 to communicate with LoRa
-#define LORA_SERIAL Serial1
+#include <SoftwareSerial.h>
+SoftwareSerial lora(10, 11); // RX=10, TX=11 (change if you used other pins)
 
 void setup() {
-  // connect with Serial port for debugging
-  Serial.begin(9600);
-
-  while(!Serial); //wait for the debugging serial
-
-  LORA_SERIAL.begin(115200);
-
-  // type your message on serial monitor
-  Serial.println("Enter your Command...... ");
-  Serial.println("Tip: use AT+VER to check the firmware version: ");
+  Serial.begin(9600);     // USB to PC
+  lora.begin(9600);       // LoRa default — change if you know the module baud
 }
 
-
-
 void loop() {
-  // if LORA is available, read from LoRa and send to Serial Monitor
-  if(LORA_SERIAL.available()){
-    Serial.write(LORA_SERIAL.read());
+  while (Serial.available()) {         // data from PC -> LoRa
+    lora.write(Serial.read());
   }
-
-  // Read from Serial monitor , send it to LoRa Serial
-  if(Serial.available()){
-    LORA_SERIAL.write(Serial.read());
+  while (lora.available()) {           // data from LoRa -> PC
+    Serial.write(lora.read());
   }
-
 }

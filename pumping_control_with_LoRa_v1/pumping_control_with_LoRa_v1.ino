@@ -58,6 +58,7 @@ void loop() {
     lcd.print("Apprx. 50%");
     Serial.println("Apprx. 50%");
   }
+  
 
   // Delay for a little time before reading all over again
   delay(500);
