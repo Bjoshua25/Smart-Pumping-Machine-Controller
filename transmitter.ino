@@ -3,8 +3,10 @@
 #include <LiquidCrystal_I2C.h>
 #include <SoftwareSerial.h>
 
-// LoRa on pins 10,11
+// LoRa on pins Rx=10, Tx=11
 SoftwareSerial lora(10, 11);
+
+// Instantiate The Lcd library
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 
 // Define the pin variables
@@ -15,6 +17,9 @@ const int relayPin     = 7;
 // Track last message to avoid redundant updates
 String lastMessage = "";
 
+// define the message variable
+String message;
+
 void setup() {
   // Begin Serial monitor for debugging
   Serial.begin(9600);
@@ -23,6 +28,7 @@ void setup() {
   Serial.println("-------------------------");
 
   // Configure Pin Modes
+  // pins in INPUT_PULLUP are High by default
   pinMode(lowLevelPin, INPUT_PULLUP);
   pinMode(highLevelPin, INPUT_PULLUP);
   pinMode(relayPin, OUTPUT);
@@ -38,24 +44,24 @@ void setup() {
 }
 
 void loop() {
-  // Reading Probe status of the Cable Sensors
+  // Reading Probe status of the Cable Sensors or Probes
   bool lowLevelStatus  = digitalRead(lowLevelPin);
   bool highLevelStatus = digitalRead(highLevelPin);
 
-  String message;
 
-  // ==== Control logic for the Pumping Machine ====
-  // Turn ON when lowLevelStatus is HIGH
+  // ======= Control logic for the Pumping Machine ========
+  // Turn ON when lowLevelStatus is HIGH; that is, when water is below this cable sensor
   if (lowLevelStatus == HIGH) {
     digitalWrite(relayPin, HIGH);
-    message = "<50% | PUMP ON";
+    message = "<50% | PUMP ON   ";
   }
+  // Turn OFF when highLevelSensor is LOW; that is, when water has touched the top-most cable sensor
   else if (highLevelStatus == LOW) {
     digitalWrite(relayPin, LOW);
-    message = "100% | PUMP OFF";
+    message = "100% | PUMP OFF    ";
   }
   else {
-    message = "Apprx. 50%";
+    message = "Apprx. 50%       ";
   }
 
   // Only update if the message changed
