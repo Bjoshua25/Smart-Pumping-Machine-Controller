@@ -8,7 +8,11 @@ LiquidCrystal_I2C lcd(0x27, 16, 2);
 // Arduino Rx=10 Tx=11
 SoftwareSerial lora(10, 11);
 
+// Button Pin
+int buttonPin = 6;
 
+// Button state
+bool manualOverride = false;
 
 // ======= Sanitize Received Msg =========
 String sanitize (String rawMsg) {
@@ -42,6 +46,9 @@ void setup() {
 
   Serial.println("Receiver Ready..");
 
+  // Set the Button Pin Mode... By default the btton reads HIGH
+  pinMode(buttonPin, INPUT_PULLUP);
+
   // configure and set up Lcd
   lcd.init();
   lcd.backlight();
@@ -55,22 +62,64 @@ void loop() {
   lcd.setCursor(0, 0);
   lcd.print("Pump Status    ");
 
-  // Receive Incoming message and clean it using the sanitize func
+
+  // ====== Send the button state to the transmitter, for Manual override ========
+  if (digitalRead(buttonPin) == LOW){
+    // Debounce, ensure to wait for 50 ms to be sure of the button state
+    delay(50);
+
+    // Recheck again...
+    if (digitalRead(buttonPin) == LOW){
+      manualOverride = !manualOverride;
+      if (manualOverride){
+        lora.print("ON");
+        Serial.println("Sent: ON");
+        lcd.setCursor(0, 1);
+        lcd.print("Manual Pump ON ");
+      } 
+      else {
+        lora.print("OFF");
+        Serial.println("Sent: OFF");
+        lcd.setCursor(0, 1);
+        lcd.print("Manual Pump OFF");
+      }
+    }
+    
+    // wait until the push button is released
+    while(digitalRead(buttonPin) == LOW);
+  }
+
+
+  // ===== Receive Incoming message and clean it using the sanitize func=====
   if (lora.available()){
     String receivedMessage = lora.readStringUntil("\n");
     receivedMessage.trim();
     receivedMessage = sanitize(receivedMessage);
 
     // Only print message when length is more than 0
-    if (receivedMessage.length() > 0 && receivedMessage.length() < 16){
-      Serial.println("Incoming: " + receivedMessage);
+    if (receivedMessage.length() > 0) {
 
-      // Pad the message to 16 characters
-      receivedMessage = padTo16(receivedMessage);
+      // Checking the Auto Message Alone:
+      if (receivedMessage.startsWith("AUTO:")) {
+        // Strip "Auto:" from the Msg, leaving "100% | Pump OFF"
+        String autoMsg = receivedMessage.substring(5);
+        autoMsg = padTo16(autoMsg);
+        Serial.println("Incoming: " + autoMsg);
+        lcd.setCursor(0, 1);
+        lcd.print(autoMsg);
+      }
 
-      // Display Pump status on receiving-end lcd
-      lcd.setCursor(0, 1);
-      lcd.print(receivedMessage);
+      else { 
+        if (receivedMessage.length() < 16) {
+          receivedMessage = padTo16(receivedMessage);
+        } 
+
+        receivedMessage = padTo16(receivedMessage);
+        Serial.println("Incoming: " + receivedMessage);
+        lcd.setCursor(0, 1);
+        lcd.print(receivedMessage);
+      }
+      
     } 
   }
 }
