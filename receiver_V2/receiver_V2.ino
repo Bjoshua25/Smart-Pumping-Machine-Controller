@@ -1,8 +1,5 @@
 #include <SoftwareSerial.h>
-#include <LiquidCrystal_I2C.h>
 
-// instantiate LCD
-LiquidCrystal_I2C lcd(0x27, 16, 2);
 
 // instantiate lora, Rx and Tx
 SoftwareSerial lora (10, 11);
@@ -48,14 +45,9 @@ void setup() {
   pinMode(highLevelIndicator, OUTPUT);
   pinMode(pumpStatus, OUTPUT);
   
-
-
-  // Configure LCD
-  lcd.init();
-  lcd.backlight();
-  lcd.setCursor(0,0);
-  lcd.print("Pump Status");
 }
+
+
 
 void loop() {
   // ========= Get watar level update, and trigger control =======
@@ -64,8 +56,6 @@ void loop() {
     
     if (receivedMessage == "ON_PUMP") {
       digitalWrite(relayPin, HIGH);
-      lcd.setCursor(0, 1);
-      lcd.print("<50% | PUMP ON");
       digitalWrite(lowLevelIndicator, HIGH);
       digitalWrite(middleLevelIndicator, LOW);
       digitalWrite(highLevelIndicator, LOW);
@@ -76,8 +66,6 @@ void loop() {
 
     else if (receivedMessage == "OFF_PUMP") {
       digitalWrite(relayPin, LOW);
-      lcd.setCursor(0, 1);
-      lcd.print("100% | PUMP OFF");
       digitalWrite(lowLevelIndicator, LOW);
       digitalWrite(middleLevelIndicator, LOW);
       digitalWrite(highLevelIndicator, HIGH);
@@ -87,8 +75,6 @@ void loop() {
     }
 
     else {
-      lcd.setCursor(0, 1);
-      lcd.print("Approx. 50%");
       digitalWrite(lowLevelIndicator, LOW);
       digitalWrite(middleLevelIndicator, HIGH);
       digitalWrite(highLevelIndicator, LOW);
@@ -106,8 +92,6 @@ void loop() {
   if (onButtonState == LOW && lastOnState == HIGH && (millis()-lastDebounceTimeOn) > debounceDelay){
     lastDebounceTimeOn = millis();
     digitalWrite(relayPin, HIGH);
-    lcd.setCursor(0, 1);
-    lcd.print("Manual Pump ON ");
     digitalWrite(pumpStatus, HIGH);
     lora.println("ON");
     Serial.println("Pump Manually ON");
@@ -118,8 +102,6 @@ void loop() {
   if (offButtonState == LOW && lastOffState == HIGH && (millis() - lastDebounceTimeOff) > debounceDelay) {
     lastDebounceTimeOff = millis();
     digitalWrite(relayPin, LOW);
-    lcd.setCursor(0, 1);
-    lcd.print("Manual Pump OFF");
     digitalWrite(pumpStatus, LOW);
     lora.println("OFF");
     Serial.println("Pump Manually OFF");

@@ -24,8 +24,9 @@ void setup() {
   pinMode(lowLevelPin, INPUT_PULLUP);
   pinMode(highLevelPin, INPUT_PULLUP);
   pinMode(pumpIndicator, OUTPUT);
-  
 }
+
+
 
 void loop() {
   // ======= Sense the water level and send state ======
@@ -34,12 +35,12 @@ void loop() {
   bool highLevelStatus = digitalRead(highLevelPin);
 
   // Logic pumping Control
-  if (lowLevelStatus == HIGH){
+  if (lowLevelStatus == LOW){
     message = "ON_PUMP";
   }
 
 
-  else if (highLevelStatus == LOW){
+  else if (highLevelStatus == HIGH){
     message = "OFF_PUMP";
   }
 
