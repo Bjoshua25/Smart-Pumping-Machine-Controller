@@ -60,7 +60,7 @@ void loop() {
       digitalWrite(middleLevelIndicator, LOW);
       digitalWrite(highLevelIndicator, LOW);
       digitalWrite(pumpStatus, HIGH);
-      lora.print("ON");
+      lora.println("ON");
       Serial.println("<50% | PUMP ON");
     }
 
@@ -70,7 +70,7 @@ void loop() {
       digitalWrite(middleLevelIndicator, LOW);
       digitalWrite(highLevelIndicator, HIGH);
       digitalWrite(pumpStatus, LOW);
-      lora.print("OFF");
+      lora.println("OFF");
       Serial.println("100% | PUMP OFF");
     }
 
@@ -78,7 +78,7 @@ void loop() {
       digitalWrite(lowLevelIndicator, LOW);
       digitalWrite(middleLevelIndicator, HIGH);
       digitalWrite(highLevelIndicator, LOW);
-      lora.print("Approx_50");
+      lora.println("Approx_50");
       Serial.println("Approx. 50%");
     }
   }
