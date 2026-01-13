@@ -11,7 +11,7 @@ int pumpIndicator = 6;
 
 // Heartbeat Interval Variables
 unsigned long lastHeartbeat = 0;
-const unsigned long heartbeatInterval = 900000;
+const unsigned long heartbeatInterval = 900000;     // Equivalent to 15 minutes
 
 // message variables
 String message;
@@ -91,12 +91,22 @@ void loop() {
           String response = lora.readStringUntil("\n");
           response.trim();
 
-          if ((message == "ON_PUMP" && response == "ON") || 
-              (message == "OFF_PUMP" && response == "OFF") ||
-              (message == "Approx. 50%" && response == "Approx_50")){
-                acknowledged = true;
-                Serial.println("ACK Received!");
-                break;
+
+          if (message == "ON_PUMP" && response == "ON"){
+            digitalWrite(pumpIndicator, HIGH);
+            acknowledged = true;
+            break;
+          }
+
+          else if (message == "OFF_PUMP" && response == "OFF"){
+            digitalWrite(pumpIndicator, LOW);
+            acknowledged = true;
+            break;
+          }
+
+          else if (message == "ON_PUMP" && response == "Approx_50"){
+            acknowledged = true;
+            break;
           }
         }
       }
