@@ -1,5 +1,6 @@
 #include <SoftwareSerial.h>
 #include <avr/wdt.h>
+#include <EEPROM.h>
 
 
 // instantiate lora, Rx and Tx
@@ -7,17 +8,20 @@ SoftwareSerial lora (10, 11);
 
 
 // Define indicator Variables
-int lowLevelIndicator = 2;
-int middleLevelIndicator = 3;
-int highLevelIndicator = 4;
-int pumpStatus = 5;
+const byte lowLevelIndicator = 2;
+const byte middleLevelIndicator = 3;
+const byte highLevelIndicator = 4;
+const byte pumpStatus = 5;
 
 // Define button pins
-int manualButtonOn = 6;
-int manualButtonStop = 7;
+const byte manualButtonOn = 6;
+const byte manualButtonStop = 7;
 
 // Define relay pin
-int relayPin = 8;
+const byte relayPin = 8;
+
+// EEPROM Address to store pump state
+const int pumpStateAddress = 0;
 
 // Debounce variables
 unsigned long lastDebounceTimeOn = 0;
@@ -51,6 +55,15 @@ void setup() {
   pinMode(pumpStatus, OUTPUT);
   
 
+
+  // =========== EEPROM System Restore =============
+  // read the last saved state from Address 0
+  byte lastState = EEPROM.read(pumpStateAddress);
+
+  // use the custom EEPROM function
+  setPumpState(lastState);
+  
+
   // Enable Watch Dog timer after 8 seconds of inactiveness
   wdt_enable(WDTO_8S);
 }
@@ -65,23 +78,22 @@ void loop() {
   // ========= Get watar level update, and trigger control =======
   if (lora.available()) {
     String receivedMessage = lora.readStringUntil("\n");
+    receivedMessage.trim();
     
     if (receivedMessage == "ON_PUMP") {
-      digitalWrite(relayPin, HIGH);
+      setPumpState(HIGH);
       digitalWrite(lowLevelIndicator, HIGH);
       digitalWrite(middleLevelIndicator, LOW);
       digitalWrite(highLevelIndicator, LOW);
-      digitalWrite(pumpStatus, HIGH);
       lora.println("ON");
       Serial.println("<50% | PUMP ON");
     }
 
     else if (receivedMessage == "OFF_PUMP") {
-      digitalWrite(relayPin, LOW);
+      setPumpState(LOW);
       digitalWrite(lowLevelIndicator, LOW);
       digitalWrite(middleLevelIndicator, LOW);
       digitalWrite(highLevelIndicator, HIGH);
-      digitalWrite(pumpStatus, LOW);
       lora.println("OFF");
       Serial.println("100% | PUMP OFF");
     }
@@ -103,8 +115,7 @@ void loop() {
 
   if (onButtonState == LOW && lastOnState == HIGH && (millis()-lastDebounceTimeOn) > debounceDelay){
     lastDebounceTimeOn = millis();
-    digitalWrite(relayPin, HIGH);
-    digitalWrite(pumpStatus, HIGH);
+    setPumpState(HIGH);
     lora.println("ON");
     Serial.println("Pump Manually ON");
   }
@@ -113,10 +124,21 @@ void loop() {
 
   if (offButtonState == LOW && lastOffState == HIGH && (millis() - lastDebounceTimeOff) > debounceDelay) {
     lastDebounceTimeOff = millis();
-    digitalWrite(relayPin, LOW);
-    digitalWrite(pumpStatus, LOW);
+    setPumpState(LOW);
     lora.println("OFF");
     Serial.println("Pump Manually OFF");
   }
   lastOffState = offButtonState;
+}
+
+
+
+
+// ========== Custom Function to Handle Relay Switching and EEPROM updating ====================
+void setPumpState(bool state){
+  digitalWrite(relayPin, state);
+  digitalWrite(pumpStatus, state);
+
+  // Update EEPROM when the value is different from what exists in the memory
+  EEPROM.update(pumpStateAddress, state);
 }
