@@ -6,34 +6,34 @@
 ----
 
 
-**AUTOMATIC WATER PUMP CONTROLLER** `AWPC` is an Long range coverage water pump controller that comprises of two devices.
+**AUTOMATIC WATER PUMP CONTROLLER** `AWPC` is a Long distance range coverage water pump controller that comprises of two devices.
 - The Smart Sensing Device `SSD`
 - Smart Pump Controller `SPC`
 
 These two devices work together to enable smart autonomous control of the water pump machine. 
 
 ## PROBLEM STATEMENT
-Every home and residential buildings around the world and especially in Nigeria using a water pumping machine of a sort. These machines help pump water from the borehole into tanks, or perhaps move water from one reservoir tanks to another which may be kilometers away from one another. Traditionally, manual means were adopted to control these water pump machines by humans manually turning ON the machine control whenever water level is LOW and OFF whenever water spillage is observed which indicates that the water tanks are filled up.
+Every home and residential buildings around the world and especially in Nigeria uses water pumping machine of a sort. These machines help pump water from the borehole into tanks, or perhaps move water from one reservoir tanks to another which may be kilometers away from the source. Traditionally, manual means were adopted to control these water pump machines whereby humans manually turning ON the machine control whenever water level is LOW and OFF whenever water spillage is observed which indicates that the water tanks are filled up.
 
 However, there have been advancement over the years. One of which is the introduction of float switches which are Mechanical switches that are placed in the water tank to sense water level in the tank and automatically trigger the Water Pump machine control state based on the water level in the tank. While Float switch have been adopted over time due to its simplicity and effectiveness in preventing water spillage during water pumping, Yet there are limitations to its use. Limitations such as;
 
 - Inability to monitor the water level in the tank in real time
 - Inabilty of users to override pumping machine control state
 - High cost of installation when Tanks are kilometers away from the Pumping sources (Cost of Cabling)
-- Lack of IoT feature which gives users the avanue to overide the control the water pump machine from anywhere in the world via their phones.
+- Lack of IoT feature which gives users the avanue to overide the control of the water pump machine from anywhere in the world via their phones.
 
-The above are the various limitation AWPC addresses. This system provide an IoT based solution with a Feedback closed loop system between the water level in the tank and the water pump machine control. A major advantage of the system is the very long distance coverage feature it provides. The Smart Sensing Device (SSD) can be attached to a water tank which may be 2.5km away from the pumping machine control location without any use of long cabling to connect these two nodes like in traditional Float switches.
+The above are the various limitation `AWPC` addresses. This system provide an IoT based solution with a Feedback closed loop system between the water level in the tank and the water pump machine control. A major advantage of the system is the very long distance coverage feature it provides. The Smart Sensing Device (SSD) can be attached to a water tank which may be 2.5km away from the pumping machine control location without any use of long cabling to connect these two nodes like in traditional Float switches.
 
 
 ![](images/system_architecture_design.jpg)
 
 
 
-AWPC uses LoRaWAN Radio Commuinication system to enable point-to-point communication between the two devices thereby providing long distance communication range of about 2.5km and reducing the cost of installation by introducing a no-cabling systems between the devices involved.
+`AWPC` uses LoRaWAN Radio Commuinication system to enable point-to-point communication between the two devices thereby providing long distance communication range of about 2.5km and reducing the cost of installation by introducing a no-cabling systems between the devices involved.
 
 
 ## AREAS OF APPLICATION
-The AWPC is suitable for use in Residential, Commercial, Agricultural, and industrial applications to meet various conditions such as when:
+The `AWPC` is suitable for use in Residential, Commercial, Agricultural, and industrial applications to meet various conditions such as when:
 - Water Pumping machines are installed kilometers away from the tanks
 - Users are required to view water level in real time and to override manually when required
 - Users are interested in controlling pumping state from their mobile phones via an application
@@ -50,7 +50,7 @@ The AWPC is suitable for use in Residential, Commercial, Agricultural, and indus
 |MT3608 Boost Converter           | Voltage Regulators (AMS1117, LM7812) |
 |ATmega328PU chip                 | ATmega328P chip                   |
 |LoRa module (F8L10A)             | LoRa module (F8L10A     )         |
-|Small Float switch sensors (2)   | HLK-2M05 DC-AC module             |
+|Small Float switch sensors (2)   | HLK-2M05 AC-DC module             |
 |Others (Resistors, Capacitors, LEDs, )  | Others (Resistors, Capacitors, Diode, LEDs, etc)   |
 
 
@@ -59,7 +59,7 @@ The AWPC is suitable for use in Residential, Commercial, Agricultural, and indus
 
 
 ## LoRa Module Configuration 
-Inorder to enable node to node communication, the LoRa module installed on the two devices were configured separated through the use of AT command. Parameters such as operating frequecies, transission power, individual ID, transmission recipient IDs, and other important parameters where set up on the F8L10A module based on the manufacturer's guideline. below is the complete configuration via HTerm application....
+Inorder to enable node-to-node communication, the LoRa module installed on the two devices were configured separated through the use of AT command. Parameters such as operating frequecies, transission power, individual ID, transmission recipient IDs, and other important parameters where set up on the F8L10A LoRa modules based on the manufacturer's guideline. below is the complete configuration via HTerm application....
 
 | Parameter      | (SSD) Node     |   (SPC) Node  |
 |:-------------------:|:--------------:|:-------------:|
@@ -71,3 +71,10 @@ Inorder to enable node to node communication, the LoRa module installed on the t
 | LoRa Rate Set       | AT+LRS=6       | AT+LRS=6      |
 
 
+
+## SCHEMATICS AND PCB DESIGN
+This project includes comprehensive simulation on proteus, and standard schematic design as well as PCB design made with DipTrace. The schematics and PCB may be found in the schematic folder [here](automatic_pump_schematic/)
+
+
+## FIRMWARE
+More details about the firmware can be found in the appropriate folder. 
